@@ -1,18 +1,27 @@
 {
-  "name": "basic",
+  "name": "auditlab",
   "version": "1.0.0",
+  "description": "An automated CIS benchmark audit tool for Windows 11 and Linux (Red Hat, Ubuntu) that runs compliance checks, generates reports, and manages settings through a simple, user-friendly GUI.",
   "main": "main.js",
   "scripts": {
-  "start": "electron ."
+    "start": "electron .",
+    "dev": "electron . --dev"
   },
   "keywords": [
     "electron",
-    "html",
-    "css"
+    "audit",
+    "cis-benchmark",
+    "security",
+    "compliance",
+    "windows",
+    "linux"
   ],
   "author": "Ameer",
   "license": "ISC",
-  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AmeerSheikh02/AuditLab.git"
+  },
   "devDependencies": {
     "electron": "^32.0.1"
   }
