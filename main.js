@@ -9,7 +9,7 @@ const createWindow = () => {
       contextIsolation: false,
     }
   });
-  win.loadFile("src/index.html");
+  win.loadFile("src/renderer/pages/index.html");
 
 };
 
