@@ -79,27 +79,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   updateInfoBox();
 
-  btn.addEventListener('click', function () {
-    loader.classList.add('active');
-    fetch('/api/get-info')
-      .then(response => response.json())
-      .then(data => {
-        loader.classList.remove('active');
-        check.classList.add('active');
-        if (data.option1) {
-          document.getElementById('option1').checked = true;
-          updateInfoBoxWithBackendData(data);
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        loader.classList.remove('active');
-      });
-  });
-
-  function updateInfoBoxWithBackendData(data) {
-    let content = '';
-    content += `<div class="info-content"> <h2 class="info-content-heading">Heading 1</h2>${data.option1}</div>`;
-    infoBox.innerHTML = content;
-  }
+  // The 'Get Report' button uses the inline `runScript()` handler in index.html.
+  // Removing the additional click handler to avoid duplicate behavior and conflicts.
 });

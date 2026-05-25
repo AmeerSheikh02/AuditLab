@@ -72,9 +72,7 @@
         </div>
         <div class="main">
           <button class="button" onclick="runScript()">Get Report</button>
-          <h1 style="font-size: 20px; margin-top: 30px" id="reportTag">
-            Report will be generated after clicking on button
-          </h1>
+          <pre id="reportTag" style="font-size:14px; margin-top:16px; white-space:pre-wrap;">Report will be generated after clicking on button</pre>
 
           <div class="loader">
             <div class="check">
@@ -87,37 +85,59 @@
     </div>
 
     <img src="" alt="" />
-    <script src="script.js"></script>
-    <script src="main.js"></script>
+    <script src="../scripts/script.js"></script>
     <script type="text/javascript">
       const scriptRunner = require("child_process");
       const fs = require("fs");
+      const path = require("path");
 
       const runScript = () => {
         console.log("Hello World!");
-        const command = "powershell -File ./Scripts/compare.ps1";
+        const loaderEl = document.querySelector('.loader');
+        const checkEl = document.querySelector('.check');
+        if (loaderEl) loaderEl.classList.add('active');
+        if (checkEl) checkEl.classList.remove('active');
+        document.getElementById("reportTag").textContent = "Running audit...";
+        const projectRoot = process.cwd();
+        const psPath = path.join(projectRoot, "Scripts", "compare.ps1");
+        const resultPath = path.join(projectRoot, "tests", "results", "result.txt");
 
-        scriptRunner.exec(command, (error, stdout, stderr) => {
-          console.log("Script is Running");
-          if (error) {
-            console.error(`Execution error: ${error}`);
-            return;
-          }
-          document.getElementById("reportTag").textContent = stdout; // Ensure this updates correctly in Electron
-
-          fs.readFile("./tests/results/result.txt", "utf8", (err, data) => {
-            let parsedData;
-            if (err) {
-              console.error(err);
-              // Fall back to hardcoded data if file read fails
-              parsedData = "Data has been downloaded as txt file";
+        if (fs.existsSync(psPath)) {
+          const command = `powershell -File "${psPath}"`;
+          scriptRunner.exec(command, (error, stdout, stderr) => {
+            console.log("Script is Running");
+            if (error) {
+              console.error(`Execution error: ${error}`);
+              // If script fails, fall back to reading the result file
             } else {
-              parsedData = "Data has been downloaded as txt file";
+              document.getElementById("reportTag").textContent = stdout;
+              if (loaderEl) loaderEl.classList.remove('active');
+              if (checkEl) checkEl.classList.add('active');
+              return;
             }
-            console.log("Parsed Data:", parsedData); // Debugging log
-            document.getElementById("reportTag").textContent = parsedData;
+            // Fall back to reading result file on error
+            if (fs.existsSync(resultPath)) {
+              const data = fs.readFileSync(resultPath, "utf8");
+              document.getElementById("reportTag").textContent = data;
+              if (loaderEl) loaderEl.classList.remove('active');
+              if (checkEl) checkEl.classList.add('active');
+            } else {
+              document.getElementById("reportTag").textContent = "No report available.";
+              if (loaderEl) loaderEl.classList.remove('active');
+            }
           });
-        });
+        } else {
+          // PowerShell script not present — read the sample result file instead
+          if (fs.existsSync(resultPath)) {
+            const data = fs.readFileSync(resultPath, "utf8");
+            document.getElementById("reportTag").textContent = data;
+            if (loaderEl) loaderEl.classList.remove('active');
+            if (checkEl) checkEl.classList.add('active');
+          } else {
+            document.getElementById("reportTag").textContent = "No report available.";
+            if (loaderEl) loaderEl.classList.remove('active');
+          }
+        }
       };
     </script>
   </body>
