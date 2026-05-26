@@ -88,57 +88,38 @@
     <script src="../scripts/script.js"></script>
     <script type="text/javascript">
       const scriptRunner = require("child_process");
-      const fs = require("fs");
       const path = require("path");
 
       const runScript = () => {
         console.log("Hello World!");
         const loaderEl = document.querySelector('.loader');
         const checkEl = document.querySelector('.check');
+        const selectedOption2 = document.getElementById("option2")?.checked;
+        const scriptName = selectedOption2 ? "compare2.ps1" : "compare.ps1";
         if (loaderEl) loaderEl.classList.add('active');
         if (checkEl) checkEl.classList.remove('active');
-        document.getElementById("reportTag").textContent = "Running audit...";
+        document.getElementById("reportTag").textContent = selectedOption2 ? "Running protection audit..." : "Running audit...";
         const projectRoot = process.cwd();
-        const psPath = path.join(projectRoot, "Scripts", "compare.ps1");
-        const resultPath = path.join(projectRoot, "tests", "results", "result.txt");
+        const psPath = path.join(projectRoot, "Scripts", scriptName);
 
-        if (fs.existsSync(psPath)) {
-          const command = `powershell -File "${psPath}"`;
-          scriptRunner.exec(command, (error, stdout, stderr) => {
-            console.log("Script is Running");
-            if (error) {
-              console.error(`Execution error: ${error}`);
-              // If script fails, fall back to reading the result file
-            } else {
-              document.getElementById("reportTag").textContent = stdout;
-              if (loaderEl) loaderEl.classList.remove('active');
-              if (checkEl) checkEl.classList.add('active');
-              return;
-            }
-            // Fall back to reading result file on error
-            if (fs.existsSync(resultPath)) {
-              const data = fs.readFileSync(resultPath, "utf8");
-              document.getElementById("reportTag").textContent = data;
-              if (loaderEl) loaderEl.classList.remove('active');
-              if (checkEl) checkEl.classList.add('active');
-            } else {
-              document.getElementById("reportTag").textContent = "No report available.";
-              if (loaderEl) loaderEl.classList.remove('active');
-            }
-          });
-        } else {
-          // PowerShell script not present — read the sample result file instead
-          if (fs.existsSync(resultPath)) {
-            const data = fs.readFileSync(resultPath, "utf8");
-            document.getElementById("reportTag").textContent = data;
+        const command = `cmd.exe /c powershell -NoProfile -ExecutionPolicy Bypass -File "${psPath}"`;
+        scriptRunner.exec(command, (error, stdout, stderr) => {
+          console.log("Script is Running");
+          if (error) {
+            console.error(`Execution error: ${error}`);
             if (loaderEl) loaderEl.classList.remove('active');
-            if (checkEl) checkEl.classList.add('active');
-          } else {
-            document.getElementById("reportTag").textContent = "No report available.";
-            if (loaderEl) loaderEl.classList.remove('active');
+            document.getElementById("reportTag").textContent = stderr || error.message || "Unable to generate report.";
+            return;
           }
-        }
+          document.getElementById("reportTag").textContent = stdout || stderr || "No report output returned.";
+          if (loaderEl) loaderEl.classList.remove('active');
+          if (checkEl) checkEl.classList.add('active');
+        });
       };
+      const option2Label = document.querySelector('label[for="option2"]');
+      if (option2Label) {
+        option2Label.textContent = "Protection Audit";
+      }
     </script>
   </body>
 </html>

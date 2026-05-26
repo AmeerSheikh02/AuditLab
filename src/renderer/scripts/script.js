@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <br>Lockout duration (minutes):                         
 <br>Lockout observation window (minutes):               
 </div>`,
-    option2: `<div class="info-content"> <h2 class="info-content-heading">Heading 2</h2>Information for Option Two...</div>`,
+    option2: `<div class="info-content"> <h2 class="info-content-heading">Protection Audit</h2>This script will check firewall profiles, SMBv1 status, Remote Desktop, Secure Boot, BitLocker, and the built-in guest account, then generate a plain-text report in the same format as the first audit.</div>`,
     option3: `<div class="info-content"><h2 class="info-content-heading">Heading 3</h2>Information for Option Three...</div>`,
     option4: `<div class="info-content"><h2 class="info-content-heading">Heading 4</h2>Information for Option Four...</div>`,
   };
